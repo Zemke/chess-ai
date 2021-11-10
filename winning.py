@@ -52,6 +52,8 @@ class Maximizer:
     elif look_ahead == 0:
       # TODO a heuristic may also be a neural network
       return self.heuristic(state)
+    # TODO prune node if a max/min has been reached for a node
+    #  that exceeds what cannot be rehabilitated from
     # TODO for testing moves engine requires state changes
     #  without mutating the original board
     if maxim:
