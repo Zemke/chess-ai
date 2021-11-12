@@ -2,24 +2,32 @@ import requests
 
 class Engine:
 
-  def __init__(self, board_id, url=None):
-    self.board_id = board_id
+  def __init__(self, url=None):
     self.url = url if url is not None else "http://localhost:9999/api"
 
-  def board(self):
-    return requests.get(url = f'{self.url}/board/{self.board_id}').json()
+  def board(self, board_id):
+    return self.__res(requests.get(url = f'{self.url}/board/{board_id}'))
 
-  def next_turns(self, piece_id):
-    return requests.get(url = f'{self.url}/board/{self.board_id}/piece/{piece_id}/allowed-next-positions').json()
+  def next_turns(self, board_id, piece_id):
+    return self.__res(requests.get(url = f'{self.url}/board/{board_id}/piece/{piece_id}/allowed-next-positions'))
 
-  def turn(self, piece, target):
+  def turn(self, board_id, piece, target, spinoff=False):
     pl = {"piece": piece, "target": target}
-    print('turn', pl)
-    print('  at', f'{self.url}/board/{self.board_id}/turn')
-    return requests.post(url = f'{self.url}/board/{self.board_id}/turn', json=pl)
+    params = {'spinoff': "1" if spinoff else "0"}
+    print(f"piece{piece} target{target} spinoff{spinoff}")
+    return self.__res(requests.post(url=f'{self.url}/board/{board_id}/turn',
+                         json=pl,
+                         params=params))
 
-  def termianl(self):
-    pass  # TODO
+  def turns(self, board_id):
+    return self.__res(requests.get(url=f'{self.url}/board/{board_id}/turns'))
+
+  def __res(self, res):
+    try:
+      return res.json()
+    except Exception as e:
+      print(res.status_code, res.text)
+      raise e
 
 """
 "captured" : [],
