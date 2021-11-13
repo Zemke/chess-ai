@@ -1,5 +1,6 @@
 from engine import Engine
 from math import inf
+from time import time
 
 
 class Maximizer:
@@ -125,5 +126,8 @@ maxim = Maximizer(eng, input())
 while 1:
   print('enter to move')
   nex = input()
+  print('thinking...')
+  t = time()
   maxim.move()
+  print(f'took me {time()-t}s')
 
