@@ -38,7 +38,7 @@ class Maximizer:
       return self.heuristic(state)
     if maxim:
       v = -inf
-      for t, s in self.__spinoff_boards(state):
+      for t, s in self.__spinoff_boards(state, True):
         mx = self.minimax(la-1, s, False, a, b, False)
         # our goal is to maximize
         if mx > v:
@@ -49,21 +49,27 @@ class Maximizer:
         a = max(a, v)
     else:
       v = +inf
-      for t, s in self.__spinoff_boards(state):
+      for t, s in self.__spinoff_boards(state, False):
         v = min(v, self.minimax(la-1, s, True, a, b, False))
         if v <= a:
           break
         b = min(b, v)
     return (v, v_t) if rett else v
 
-  def __spinoff_boards(self, state):
+  def __spinoff_boards(self, state, maxim):
+    res = []
     for side in state.castling:
-      b = self.eng.castle(state.board_id, side, True)
-      yield (Move.castling(side), State.from_engine(b))
+      s = State.from_engine(self.eng.castle(state.board_id, side, True))
+      res.append((self.heuristic(s), Move.castling(side), s))
     for turn in self.eng.turns(state.board_id):
       for target in turn['targets']:
-        b = self.eng.turn(state.board_id, turn['piece']['id'], target, True)
-        yield (Move.turn(turn['piece']['id'], target), State.from_engine(b))
+        piece = turn['piece']['id']
+        s = State.from_engine(
+          self.eng.turn(state.board_id, piece, target, True))
+        res.append((self.heuristic(s), Move.turn(piece, target), s))
+    res.sort(key=lambda x: x[0], reverse=maxim)
+    for r in res:
+      yield [r[1], r[2]]
 
 
 class Move:
