@@ -12,11 +12,12 @@ class Maximizer:
 
   def move(self):
     board = State.from_engine(eng.board(self.board_id))
-    _, t = self.minimax(3, board, True, -inf, +inf)
+    v, t = self.minimax(3, board, True, -inf, +inf)
     if t.castling:
       self.eng.castle(self.board_id, t.castling)
     else:
       self.eng.turn(self.board_id, t.piece, t.target)
+    return v
 
   def heuristic(self, state):
     pieces_v = { 'q': 3, 'r': 2, 'b': 2, 'k': 2, 'p': 1, 'x': 0 }
@@ -128,6 +129,6 @@ while 1:
   nex = input()
   print('thinking...')
   t = time()
-  maxim.move()
-  print(f'took me {time()-t}s')
+  v = maxim.move()
+  print(f'took me {time()-t:.2f}s for v={v}')
 
