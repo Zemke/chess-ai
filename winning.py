@@ -15,8 +15,11 @@ class Maximizer:
     acc = [[] for i in range(look_ahead+1)]
     mx = self.minimax(look_ahead, State.from_engine(board), None, True, acc)
     print(acc)
-    v, b, [piece, target] = sorted(acc[look_ahead-1], key=lambda x: x[0])[-1]
-    self.eng.turn(self.board_id, piece, target)
+    move = sorted(acc[look_ahead-1], key=lambda x: x[0])[-1][2]
+    if move.castling:
+      self.eng.castle(self.board_id, move.castling)
+    else:
+      self.eng.turn(self.board_id, move.piece, move.target)
 
   def heuristic(self, state):
     pieces_v = { 'q': 3, 'r': 2, 'b': 2, 'k': 2, 'p': 1, 'x': 0 }
@@ -44,29 +47,47 @@ class Maximizer:
     #  that exceeds what cannot be rehabilitated from
     if maxim:
       v = -inf
-      for turn, b in self.__spinoff_boards(state.board_id):
+      for turn, b in self.__spinoff_boards(state):
         v = max(v, self.minimax(look_ahead-1, b, turn, False, acc))
     else:
       v = +inf
-      for turn, b in self.__spinoff_boards(state.board_id):
+      for turn, b in self.__spinoff_boards(state):
         v = min(v, self.minimax(look_ahead-1, b, turn, True, acc))
     acc[look_ahead].append([v, state, by_turn])
     return v
 
-  def __spinoff_boards(self, board_id):
-    # TODO castling
-    for turn in self.eng.turns(board_id):
+  def __spinoff_boards(self, state):
+    for side in state.castling:
+      b = self.eng.castle(Move.castling(side), True)
+      yield (Move.castling(side), State.from_engine(b))
+    for turn in self.eng.turns(state.board_id):
       for target in turn['targets']:
-        yield ((turn['piece']['id'], target),
-                State.from_engine(
-                  self.eng.turn(board_id, turn['piece']['id'], target, True)))
+        b = self.eng.turn(state.board_id, turn['piece']['id'], target, True)
+        yield (Move.turn(turn['piece']['id'], target), State.from_engine(b))
+
+
+class Move:
+  def __init__(self, piece=None, target=None, castling=False):
+    self.piece = piece
+    self.target = target
+    self.castling = castling  # QUEENSIDE, KINGSIDE
+
+  @staticmethod
+  def castling(side):
+    return Move(castling=side)
+
+  @staticmethod
+  def turn(piece, target):
+    return Move(piece=piece, target=target)
+
 
 class State:
-  def __init__(self, board_id, grid, next_turn, checkmated):
+  def __init__(self, board_id, grid, next_turn, checkmated, castling):
     self.board_id = board_id
     self.grid = grid
     self.next_turn = next_turn
     self.checkmated = checkmated
+    self.castling = castling
 
   def pieces(self, black):
     pp = []
@@ -96,7 +117,8 @@ class State:
     return State(board_id=json['id'],
                  grid=r,
                  next_turn=json['nextTurn'],
-                 checkmated=json['checkmated'])
+                 checkmated=json['checkmated'],
+                 castling=json['castlingAllowed'])
 
 
 eng = Engine()

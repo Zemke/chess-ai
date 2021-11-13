@@ -24,6 +24,12 @@ class Engine:
   def turns(self, board_id):
     return self.__res(requests.get(url=f'{self.url}/board/{board_id}/turns'))
 
+  def castle(self, board_id, side, spinoff=False):
+    if side != 'KINGSIDE' and side != 'QUEENSIDE':
+      raise Exception("Invalid side " + str(side))
+    print(f"board_id{board_id} side{side} spinoff{spinoff}")
+    return self.__res(requests.get(url=f'{self.url}/board/{board_id}/castle/{side}'))
+
   def __res(self, res):
     try:
       return res.json()
