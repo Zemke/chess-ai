@@ -13,11 +13,13 @@ class Engine:
 
   def turn(self, board_id, piece, target, spinoff=False):
     pl = {"piece": piece, "target": target}
+    if target['rank'] == 0 or target['rank'] == 7:
+      pl['promotion'] = 'queen'
     params = {'spinoff': "1" if spinoff else "0"}
-    print(f"piece{piece} target{target} spinoff{spinoff}")
+    print(f"piece{piece} target{target} promotion{pl.get('promotion', '_')} spinoff{spinoff}")
     return self.__res(requests.post(url=f'{self.url}/board/{board_id}/turn',
-                         json=pl,
-                         params=params))
+                                    json=pl,
+                                    params=params))
 
   def turns(self, board_id):
     return self.__res(requests.get(url=f'{self.url}/board/{board_id}/turns'))
