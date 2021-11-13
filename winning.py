@@ -58,7 +58,7 @@ class Maximizer:
 
   def __spinoff_boards(self, state):
     for side in state.castling:
-      b = self.eng.castle(Move.castling(side), True)
+      b = self.eng.castle(state.board_id, side, True)
       yield (Move.castling(side), State.from_engine(b))
     for turn in self.eng.turns(state.board_id):
       for target in turn['targets']:
