@@ -10,16 +10,12 @@ class Maximizer:
     self.board_id = board_id
 
   def move(self):
-    board = eng.board(self.board_id)
-    look_ahead = 2
-    acc = [[] for i in range(look_ahead+1)]
-    mx = self.minimax(look_ahead, State.from_engine(board), None, True, acc)
-    print(acc)
-    move = sorted(acc[look_ahead-1], key=lambda x: x[0])[-1][2]
-    if move.castling:
-      self.eng.castle(self.board_id, move.castling)
+    board = State.from_engine(eng.board(self.board_id))
+    _, t = self.minimax(3, board, True, -inf, +inf)
+    if t.castling:
+      self.eng.castle(self.board_id, t.castling)
     else:
-      self.eng.turn(self.board_id, move.piece, move.target)
+      self.eng.turn(self.board_id, t.piece, t.target)
 
   def heuristic(self, state):
     pieces_v = { 'q': 3, 'r': 2, 'b': 2, 'k': 2, 'p': 1, 'x': 0 }
@@ -32,28 +28,31 @@ class Maximizer:
       v -= pieces_v[p.lower()]
     return v
 
-  def minimax(self, look_ahead, state, by_turn, maxim, acc):
+  def minimax(self, la, state, maxim, a, b, rett=True):
     if state.checkmated:
-      v = -inf if maxim else +inf
-      acc[look_ahead].append([v, state, by_turn])
-      return v
-    elif look_ahead == 0:
+      return -inf if maxim else +inf
+    elif la == 0:
       # TODO a heuristic may also be a neural network
-      v = self.heuristic(state)
-      acc[look_ahead].append([v, state, by_turn])
-      return v
-    # TODO prune node if a max/min has been reached for a node
-    #  that exceeds what cannot be rehabilitated from
+      return self.heuristic(state)
     if maxim:
       v = -inf
-      for turn, b in self.__spinoff_boards(state):
-        v = max(v, self.minimax(look_ahead-1, b, turn, False, acc))
+      for t, s in self.__spinoff_boards(state):
+        mx = self.minimax(la-1, s, False, a, b, False)
+        # our goal is to maximize
+        if mx > v:
+          v = mx
+          v_t = t
+        if v >= b:
+          break
+        a = max(a, v)
     else:
       v = +inf
-      for turn, b in self.__spinoff_boards(state):
-        v = min(v, self.minimax(look_ahead-1, b, turn, True, acc))
-    acc[look_ahead].append([v, state, by_turn])
-    return v
+      for t, s in self.__spinoff_boards(state):
+        v = min(v, self.minimax(la-1, s, True, a, b, False))
+        if v <= a:
+          break
+        b = min(b, v)
+    return (v, v_t) if rett else v
 
   def __spinoff_boards(self, state):
     for side in state.castling:
