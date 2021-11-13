@@ -25,13 +25,12 @@ class Maximizer:
     pieces_v = { 'q': 3, 'r': 2, 'b': 2, 'k': 2, 'p': 1, 'x': 0 }
     maxim = state.pieces(True)
     minim = state.pieces(False)
-    v_maxim = 0
+    v = 0
     for p in maxim:
-      v_maxim += pieces_v[p]
-    v_minim = 0
+      v += pieces_v[p]
     for p in minim:
-      v_maxim -= pieces_v[p.lower()]
-    return v_maxim
+      v -= pieces_v[p.lower()]
+    return v
 
   def minimax(self, look_ahead, state, by_turn, maxim, acc):
     if state.checkmated:
