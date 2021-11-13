@@ -13,21 +13,6 @@ class Maximizer:
 
   def move(self):
     board = eng.board(self.board_id)
-
-    # TODO for now just taking the first turn, but be clever
-    #piece = None
-    #for d1 in board["grid"]:
-    #  for p in d1:
-    #    if p is None:
-    #      continue
-    #    if p['color'] == self.C and p['name'] == 'Pawn':
-    #      piece = p
-    #print('piece', piece)
-    #nxx = eng.next_turns(piece['id'])
-    #print(nxx)  #[{'file': 7, 'rank': 2}, {'file': 7, 'rank': 3}]
-    #eng.turn(piece['id'], nxx[0])
-
-    # here's smartness
     look_ahead = 2
     acc = [[] for i in range(look_ahead+1)]
     mx = self.minimax(look_ahead, State.from_engine(board), None, True, acc)
