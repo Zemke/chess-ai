@@ -36,7 +36,7 @@ class Maximizer:
     self.eng.turn(self.board_id, piece, target)
 
   def heuristic(self, state):
-    pieces_v = { 'q': 5, 'r': 4, 'b': 3, 'k': 2, 'p': 1, 'x': 0 }
+    pieces_v = { 'q': 3, 'r': 2, 'b': 2, 'k': 2, 'p': 1, 'x': 0 }
     maxim = state.pieces(True)
     minim = state.pieces(False)
     v_maxim = 0
