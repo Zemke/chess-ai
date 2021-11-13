@@ -37,34 +37,3 @@ class Engine:
       print(res.status_code, res.text)
       raise e
 
-"""
-"captured" : [],
-"castlingAllowed" : [],
-"grid" : [ [
-      {
-         "color" : "BLACK",
-         "id" : "8c8ee347-f88e-45a0-be57-c9322154bab2",
-         "name" : "Rook",
-         "position" : {
-            "file" : 0,
-            "rank" : 0
-         },
-         "side" : "QUEENSIDE"
-.
-.
-.
-"id" : "d87ba920-8fcc-4539-9186-5e142c1ce5bf",
-"movements" : [],
-"nextTurn" : "WHITE",
-"uuidBlack" : null,
-"uuidWhite" : "fcd1c27e-8e11-412f-8de8-4ee54b8b9ea7"
-def __init__(self, grid, next_turn):
-  self.grid = grid
-  next_turn = next_turn
-
-def from_engine(self, json):
-  return State(
-    grid = json.
-  )
-"""
-
