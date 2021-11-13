@@ -44,16 +44,16 @@ class Maximizer:
         if mx > v:
           v = mx
           v_t = t
-        if v >= b:
-          break
         a = max(a, v)
+        if b <= a:
+          break
     else:
       v = +inf
       for t, s in self.__spinoff_boards(state, False):
         v = min(v, self.minimax(la-1, s, True, a, b, False))
-        if v <= a:
-          break
         b = min(b, v)
+        if b <= a:
+          break
     return (v, v_t) if rett else v
 
   def __spinoff_boards(self, state, maxim):
