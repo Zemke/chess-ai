@@ -1,8 +1,6 @@
 from engine import Engine
 from math import inf
 
-# TODO castle
-
 
 class Maximizer:
   C = 'BLACK'
@@ -56,6 +54,7 @@ class Maximizer:
     return v
 
   def __spinoff_boards(self, board_id):
+    # TODO castling
     for turn in self.eng.turns(board_id):
       for target in turn['targets']:
         yield ((turn['piece']['id'], target),
