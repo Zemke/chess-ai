@@ -20,7 +20,7 @@ class Maximizer:
     return v
 
   def heuristic(self, state):
-    pieces_v = { 'q': 3, 'r': 2, 'b': 2, 'k': 2, 'p': 1, 'x': 0 }
+    pieces_v = { 'q': 100, 'r': 50, 'b': 50, 'k': 50, 'p': 20, 'x': 0 }
     maxim = state.pieces(True)
     minim = state.pieces(False)
     v = 0
