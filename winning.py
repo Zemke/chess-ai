@@ -1,7 +1,7 @@
 from engine import Engine
 from math import inf
 
-# TODO En passant and castle
+# TODO castle
 
 
 class Maximizer:
