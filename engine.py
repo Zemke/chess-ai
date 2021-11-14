@@ -16,7 +16,6 @@ class Engine:
     if target['rank'] == 0 or target['rank'] == 7:
       pl['promotion'] = 'queen'
     params = {'spinoff': "1" if spinoff else "0"}
-    print(f"piece{piece} target{target} promotion{pl.get('promotion', '_')} spinoff{spinoff}")
     return self.__res(requests.post(url=f'{self.url}/board/{board_id}/turn',
                                     json=pl,
                                     params=params))
@@ -27,7 +26,6 @@ class Engine:
   def castle(self, board_id, side, spinoff=False):
     if side != 'KINGSIDE' and side != 'QUEENSIDE':
       raise Exception("Invalid side " + str(side))
-    print(f"board_id{board_id} side{side} spinoff{spinoff}")
     return self.__res(requests.post(url=f'{self.url}/board/{board_id}/castle/{side}'))
 
   def __res(self, res):
