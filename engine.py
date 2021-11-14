@@ -28,7 +28,7 @@ class Engine:
     if side != 'KINGSIDE' and side != 'QUEENSIDE':
       raise Exception("Invalid side " + str(side))
     print(f"board_id{board_id} side{side} spinoff{spinoff}")
-    return self.__res(requests.get(url=f'{self.url}/board/{board_id}/castle/{side}'))
+    return self.__res(requests.post(url=f'{self.url}/board/{board_id}/castle/{side}'))
 
   def __res(self, res):
     try:
