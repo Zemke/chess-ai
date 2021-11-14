@@ -110,16 +110,14 @@ class State:
   @staticmethod
   def from_engine(json):
     g = json['grid']
-    r = [[None for i in range(9)] for i in range(9)]
-    for row in g:
-      for p in row:
-        if p is None:
-          n = None
-        else:
+    r = [[None for k in range(8)] for i in range(8)]
+    for ri in range(8):
+      for ci in range(8):
+        p = g[ri][ci]
+        if p is not None:
           n = 'x' if p['name'] == 'King' else p['name'][0]
           n = n.lower() if p['color'] == Maximizer.C else n.upper()
-        if p is not None:
-          r[p['position']['rank']][p['position']['file']] = n
+          r[ri][ci] = n
     return State(board_id=json['id'],
                  grid=r,
                  next_turn=json['nextTurn'],
