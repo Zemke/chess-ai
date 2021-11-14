@@ -23,7 +23,7 @@ class Maximizer:
     return v
 
   def heuristic(self, state):
-    pieces_v = { 'q': 4, 'r': 2, 'b': 2, 'k': 2, 'p': 1, 'x': 0 }
+    pieces_v = { 'q': 4, 'r': 2, 'b': 2, 'n': 2, 'p': 1, 'k': 0 }
     maxim = state.pieces(True)
     minim = state.pieces(False)
     v = 0
@@ -126,7 +126,7 @@ class State:
       for ci in range(8):
         p = g[ri][ci]
         if p is not None:
-          n = 'x' if p['name'] == 'King' else p['name'][0]
+          n = 'n' if p['name'] == 'Knight' else p['name'][0]
           n = n.lower() if p['color'] == Maximizer.C else n.upper()
           r[ri][ci] = n
     return State(board_id=json['id'],
