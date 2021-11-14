@@ -3,7 +3,7 @@ import chess
 
 
 class State:
-  pieces_v = { 'q': 4, 'r': 2, 'b': 2, 'n': 2, 'p': 1, 'k': 0 }
+  pieces_v = { 'q': 90, 'r': 40, 'b': 30, 'n': 30, 'p': 10, 'k': 0 }
 
   def __init__(self, board):
     self.board = board
@@ -22,7 +22,7 @@ class State:
     maxim = self.pieces(True)
     minim = self.pieces(False)
     v = 0
-    lmf = .01 * self.board.legal_moves.count()
+    lmf = .1 * self.board.legal_moves.count()
     for p in maxim:
       v += self.pieces_v[p]
       v += lmf
