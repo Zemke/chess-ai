@@ -5,6 +5,7 @@ from time import time
 
 class Maximizer:
   C = 'BLACK'
+  __DP = {}
 
   def __init__(self, eng, board_id):
     self.eng = eng
@@ -12,15 +13,17 @@ class Maximizer:
 
   def move(self):
     board = State.from_engine(eng.board(self.board_id))
-    v, t = self.minimax(3, board, True, -inf, +inf)
-    if t.castling:
-      self.eng.castle(self.board_id, t.castling)
+    tt = self.minimax(3, board, True, -inf, +inf)
+    tt.sort(key=lambda x: x[0], reverse=True)
+    v, m = tt[0]
+    if m.castling:
+      self.eng.castle(self.board_id, m.castling)
     else:
-      self.eng.turn(self.board_id, t.piece, t.target)
+      self.eng.turn(self.board_id, m.piece, m.target)
     return v
 
   def heuristic(self, state):
-    pieces_v = { 'q': 100, 'r': 50, 'b': 50, 'k': 50, 'p': 20, 'x': 0 }
+    pieces_v = { 'q': 4, 'r': 2, 'b': 2, 'k': 2, 'p': 1, 'x': 0 }
     maxim = state.pieces(True)
     minim = state.pieces(False)
     v = 0
@@ -31,30 +34,34 @@ class Maximizer:
     return v
 
   def minimax(self, la, state, maxim, a, b, rett=True):
+    if rett:
+      tt = []
     if state.checkmated:
       return -inf if maxim else +inf
     elif la == 0:
       # TODO a heuristic may also be a neural network
       return self.heuristic(state)
-    if maxim:
-      v = -inf
-      for t, s in self.__spinoff_boards(state, True):
-        mx = self.minimax(la-1, s, False, a, b, False)
-        # our goal is to maximize
-        if mx > v:
-          v = mx
-          v_t = t
+    spb = self.__spinoff_boards(state, maxim)
+    if la <= 1:
+      spb = spb[:10]
+    v = -inf if maxim else +inf
+    for t, s in spb:
+      if s in self.__DP:
+        mx = self.__DP[s]
+      else:
+        mx = self.minimax(la-1, s, not maxim, a, b, False)
+        self.__DP[s] = mx
+      if rett:
+        tt.append((mx, t))
+      if maxim:
+        v = max(v, mx)
         a = max(a, v)
-        if b <= a:
-          break
-    else:
-      v = +inf
-      for t, s in self.__spinoff_boards(state, False):
-        v = min(v, self.minimax(la-1, s, True, a, b, False))
+      else:
+        v = min(v, mx)
         b = min(b, v)
-        if b <= a:
-          break
-    return (v, v_t) if rett else v
+      if b <= a:
+        break
+    return tt if rett else v
 
   def __spinoff_boards(self, state, maxim):
     res = []
@@ -68,8 +75,7 @@ class Maximizer:
           self.eng.turn(state.board_id, piece, target, True))
         res.append((self.heuristic(s), Move.turn(piece, target), s))
     res.sort(key=lambda x: x[0], reverse=maxim)
-    for r in res:
-      yield [r[1], r[2]]
+    return [[r[1], r[2]] for r in res]
 
 
 class Move:
@@ -85,6 +91,11 @@ class Move:
   @staticmethod
   def turn(piece, target):
     return Move(piece=piece, target=target)
+
+  def __repr__(self):
+    if self.castling:
+      return str(self.castling)
+    return str((self.piece, self.target))
 
 
 class State:
@@ -123,6 +134,28 @@ class State:
                  next_turn=json['nextTurn'],
                  checkmated=json['checkmated'],
                  castling=json['castlingAllowed'])
+
+  def __repr__(self):
+    s = ''
+    for row in self.grid:
+      s += ' '.join([i if i is not None else ' ' for i in row])
+      s += '\n'
+    return s
+
+  def __eq__(self, o):
+    if not isinstance(o, State):
+      return False
+    return (self.grid == o.grid
+        and self.next_turn == o.next_turn
+        and self.checkmated == o.checkmated
+        and self.castling == o.castling)
+
+  def __hash__(self):
+    return hash(
+      (tuple([tuple(i) for i in self.grid]),
+      self.next_turn,
+      self.checkmated,
+      tuple(self.castling)))
 
 
 eng = Engine()
