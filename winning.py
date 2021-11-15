@@ -17,7 +17,11 @@ class Maximizer:
     mm = self.minimax(5, s, True, -inf, +inf)
     mm.sort(key=lambda x: x[0], reverse=True)
     v, m = mm[0]
-    self.engine.turn(m)
+    if s.board.is_castling(m):
+      self.engine.castle(
+        'KINGSIDE' if s.board.is_kingside_castling(m) else 'QUEENSIDE')
+    else:
+      self.engine.turn(m)
     return v, len(self.S)-S_before
 
   def minimax(self, la, s, maxim, a, b, ret=True):
@@ -60,9 +64,6 @@ class Maximizer:
         break # alpha-beta cutoff
 
     return vm if ret else v
-
-
-# TODO castling
 
 print("paste game uuid")
 maxim = Maximizer(Engine(input()))

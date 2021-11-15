@@ -68,11 +68,12 @@ class State:
     fen += ' '
     fen += 'b' if json['nextTurn'] == 'BLACK' else 'w'
     fen += ' '
-    cstl = ''.join(list(map(lambda s: s[0], json['castlingAllowed'])))
-    if len(cstl) > 0:
-      fen += cstl.upper() if json['nextTurn'] == 'BLACK' else cstl.lower()
-    else:
+    castling = json['castlingAllowed']
+    if len(castling['WHITE']) == 0 and len(castling['BLACK']) == 0:
       fen += '-'
+    else:
+      fen += ''.join(map(lambda s: s[0].upper(), castling['WHITE']))
+      fen += ''.join(map(lambda s: s[0].upper(), castling['BLACK']))
     fen += ' - 0 0'
     return State(chess.Board(fen))
 
