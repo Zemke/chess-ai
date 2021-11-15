@@ -62,7 +62,7 @@ class Maximizer:
     return vm if ret else v
 
 
-# TODO en passant, castling
+# TODO castling
 
 print("paste game uuid")
 maxim = Maximizer(Engine(input()))
