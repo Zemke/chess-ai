@@ -3,7 +3,7 @@ import chess
 
 
 class State:
-  pieces_v = { 'q': 90, 'r': 40, 'b': 30, 'n': 30, 'p': 10, 'k': 0 }
+  pieces_v = { 'q': 9, 'r': 4, 'b': 3, 'n': 3, 'p': 1, 'k': 0 }
 
   def __init__(self, board):
     self.board = board
