@@ -73,7 +73,7 @@ class State:
       fen += '-'
     else:
       fen += ''.join(map(lambda s: s[0].upper(), castling['WHITE']))
-      fen += ''.join(map(lambda s: s[0].upper(), castling['BLACK']))
+      fen += ''.join(map(lambda s: s[0].lower(), castling['BLACK']))
     fen += ' - 0 0'
     return State(chess.Board(fen))
 
