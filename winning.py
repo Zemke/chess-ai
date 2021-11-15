@@ -33,7 +33,7 @@ class Maximizer:
 
     opts = []
     for m in s.board.legal_moves:
-      cp = s.board.copy(stack=False)
+      cp = s.board.copy()
       cp.push(m)
       ns = State(cp)
       opts.append((m, ns))
