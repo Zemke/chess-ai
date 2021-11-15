@@ -99,8 +99,8 @@ class Engine:
     piece = self.board['grid'][f[0]][f[1]]
     #print(f'from {f} to {target} via {m} piece {piece}')
     pl = {"piece": piece['id'], "target": target}
-    if target['rank'] == 0 or target['rank'] == 7:
-      pl['promotion'] = 'queen'
+    if m.promotion is not None:
+      pl['promotion'] = chess.piece_name(m.promotion).capitalize()
     return self.__res(
       requests.post(url=f'{self.url}/board/{self.board_id}/turn', json=pl))
 
